@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--<html manifest="compass.manifest">-->
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<title>ENGINETEC</title>
+		<meta name="description" content="" />
+		<meta content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />		
+		<!-- iPhone (retina) -->
+		<link rel="apple-touch-startup-image" href="iphone-retina.png" sizes="640x1096">
+
+		<link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<script src="js/jquery-1.8.2.min.js"></script>
+		<script src="js/jquery.mobile-1.3.1.min.js"></script>
+		<script type="text/javascript">
+			function inciarSesion(){
+				$.post(
+					"http://192.168.1.107:8080/ServidorRest/webresources/factorial",
+					{ base: 7 },
+					function(data){
+						alert(data);
+					});
+			}
+		</script>
+	</head>
+
+	<body>
+		<div data-role="page" id="home" data-theme="a">
+			<div data-role="header" data-position="inline">
+				<h1>CAEA</h1>
+			</div>
+			<div data-role="content" class="text-center">
+				<h1>Inicia sesi&oacute;n</h1>
+				<form>
+			     <label for="usuario">Nombre de usuario:</label>
+			     <input type="text" name="usuario" id="usuario" placeholder="Usuario">
+			     <label for="passwd">Contrase&ntilde;a:</label>
+			     <input type="password" name="passwd" id="passwd" placeholder="Contraseña">
+			     <br />
+			     <a href="#" onclick="inciarSesion();" data-role="button" data-theme="b" data-inline="true">Iniciar sesi&oacute;n</a>
+			</form>
+				
+			</div><!--fin data-role-contenedor-->
+			
+			<div data-role="footer" data-position="fixed">		
+				<div data-role="navbar">
+					<ul>
+						<li><a href="http://blog.enginetec.com.mx/" target="_blank"><img src="media/logo_enginetec.png" class="iconfooter"><br />ENGINETEC</a></li>
+						<li><a href="about.html" data-transition="flow"><img src="media/21-skull.png" class="iconfooter"><br />Acerca de...</a></li>
+					</ul>
+				</div><!-- /navbar -->
+			</div><!-- /footer -->		
+		</div>
+
+	</body>
+</html>
