@@ -59,7 +59,7 @@
 					}
 				)
 				.fail(function() {
-					alert("Nored"); 
+					//alert("Nored"); 
 					$.mobile.loading('hide');
 					navigator.notification.alert(
 							    'No se puede establecer la conexión con el servidor.',     // mensaje (message)
@@ -78,7 +78,7 @@
 			    	navigator.geolocation.getCurrentPosition(showPosition);
 			    }else{
 			    	setInterval(sendUbictimeOut);
-			    	alert("No se ha podido determinar su ubicación");
+			    	//alert("No se ha podido determinar su ubicación");
 			    	navigator.notification.alert(
 							    'No se puede establecer su ubicación',     // mensaje (message)
 							    function(){ },         // función 'callback' (alertCallback)
@@ -97,7 +97,7 @@
 					function(data){
 						if(data!="false" && edo==1){
 							edo = 2;
-							alert("Su brigada ha sido asignada");
+							//alert("Su brigada ha sido asignada");
 							incidente = jQuery.parseJSON(data);
 							var inf = "Incidente "+incidente.incidente+"<br />";
 							inf += "Descripci&oacute;n: "+incidente.descripcion+"<br>";
