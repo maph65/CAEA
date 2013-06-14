@@ -21,6 +21,11 @@
 		<script src="js/jquery.soap.js"></script>
 		 
 		<script type="text/javascript">
+			var edo = 1;
+			var servidor;
+			var usuario;
+			var incidente;
+			var sendUbictimeOut, lat, lon;
 			function inciarSesion(){
 				$.mobile.loading('show', {
 					text : 'Iniciando sesión...',
@@ -28,14 +33,21 @@
 					theme : 'a',
 					html : ""
 				});
+				servidor = $("#server").val();
 				$.get(
-					"http://"+ $("#server").val() +"/CAEAmv/api/login",
+					"http://"+ servidor +"/CAEAmv/api/login",
 					{'user':$("#usuario").val(), 'pass':$("#passwd").val()},
 					function(data){
-						$.mobile.loading('hide');
-						if(data=="true"){
-							
+						if(data!="false"){
+							usuario = jQuery.parseJSON(data);
+							$.mobile.loading('hide');
+							$("#nombre").html(usuario.nombre);
+							$.mobile.changePage('#home', {
+								transition : 'flow'
+							});
+							sendUbictimeOut = setInterval('sendUbicacion()',30000);
 						}else{
+							//alert("Nom usuario incorrecto");
 							navigator.notification.alert(
 							    'Nombre de usuario o contraseña incorrectos.',     // mensaje (message)
 							    function(){ $("#usuario").val(""); $("#passwd").val(""); },         // función 'callback' (alertCallback)
@@ -45,14 +57,72 @@
 						
 						}
 					}
-				);
+				)
+				.fail(function() {
+					alert("Nored"); 
+					$.mobile.loading('hide');
+					navigator.notification.alert(
+							    'No se puede establecer la conexión con el servidor.',     // mensaje (message)
+							    function(){ },         // función 'callback' (alertCallback)
+							    'Inicio de sesión',            // titulo (title)
+							    'Cerrar'                // nombre del botón (buttonName)
+						  );
 				
+				});
+				
+			}
+			
+			function sendUbicacion(){
+				if (navigator.geolocation)
+			    {
+			    	navigator.geolocation.getCurrentPosition(showPosition);
+			    }else{
+			    	setInterval(sendUbictimeOut);
+			    	alert("No se ha podido determinar su ubicación");
+			    	navigator.notification.alert(
+							    'No se puede establecer su ubicación',     // mensaje (message)
+							    function(){ },         // función 'callback' (alertCallback)
+							    'Geolocalización',            // titulo (title)
+							    'Cerrar'                // nombre del botón (buttonName)
+						  );
+			    }
+			}
+			
+			function showPosition(position){
+				  lat = position.coords.latitude; 
+				  lon = position.coords.longitude; 
+				  $.get(
+					"http://"+ servidor +"/CAEAmv/api/setUbicacion",
+					{'lat':lat, 'lon':lon, 'brigada':usuario.id, 'edo': edo},
+					function(data){
+						if(data!="false" && edo==1){
+							edo = 2;
+							alert("Su brigada ha sido asignada");
+							incidente = jQuery.parseJSON(data);
+							var inf = "Incidente "+incidente.incidente+"<br />";
+							inf += "Descripci&oacute;n: "+incidente.descripcion+"<br>";
+							inf += "Delegaci&oacute;n: "+incidente.delegacion+"<br>";
+							inf += "Zona: "+incidente.zona+"<br>";
+							inf += "Paraje: "+incidente.paraje+"<br>";
+							inf += "Predio: "+incidente.predio+"<br>";
+							inf += "Tenencia: "+incidente.tenencia+"<br>";
+							inf += "Fecha: "+incidente.fecha+"<br>";
+							$("#info").html(inf);
+			    			navigator.notification.alert(
+							    'Su brigada ha sido asignada',     // mensaje (message)
+							    function(){ },         // función 'callback' (alertCallback)
+							    'Asignación',            // titulo (title)
+							    'Ver asignación'                // nombre del botón (buttonName)
+						  );
+						}
+					});
 			}
 		</script>
 	</head>
 
 	<body>
-		<div data-role="page" id="home" data-theme="a">
+		<!--pagina principal-->
+		<div data-role="page" id="login" data-theme="a">
 			<div data-role="header" data-position="inline">
 				<h1>CAEA</h1>
 			</div>
@@ -60,7 +130,7 @@
 				<h1>Inicia sesi&oacute;n</h1>
 				<form>
 				 <label for="server">URL del servidor:</label>
-			     <input type="text" name="server" id="server" placeholder="URL del servidor" value="enginetec.sytes.net">
+			     <input type="text" name="server" id="server" placeholder="URL del servidor" value="148.204.56.105">
 			     <label for="usuario">Nombre de usuario:</label>
 			     <input type="text" name="usuario" id="usuario" placeholder="Usuario">
 			     <label for="passwd">Contrase&ntilde;a:</label>
@@ -81,5 +151,25 @@
 			</div><!-- /footer -->		
 		</div>
 
+		<!--Página Home-->
+		<div data-role="page" id="home">
+			<div data-role="header" data-position="inline">
+				<h1>CAEA</h1>
+			</div>
+			<div data-role="content">
+				<h2>Bienvenido <span id="nombre"></span></h2>
+				<p id="info">Actualmente no se encuentra asignado a ning&uacute;n incidente</p>
+			</div><!--fin data-role-contenedor-->
+			
+			<div data-role="footer" data-position="fixed">		
+				<div data-role="navbar">
+					<ul>
+						<li><a href="#login" data-transition="flow"><img src="media/53-house.png" class="iconfooter"><br />Salir</a></li>
+						<li><a href="about.html" data-transition="flow"><img src="media/21-skull.png" class="iconfooter"><br />Acerca de...</a></li>
+					</ul>
+				</div><!-- /navbar -->
+			</div><!-- /footer -->
+		</div>
+		
 	</body>
 </html>
